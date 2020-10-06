@@ -12,7 +12,6 @@ passport.use(
       // user logic
       const userService = new UserService();
 
-      console.log('TESTSS');
       // find if user is on the DB and return it
       const user = await userService.getUser(email);
 

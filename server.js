@@ -17,6 +17,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Static files
+app.use('/docs', express.static('public'));
+
 // routes
 users(app);
 orders(app);
