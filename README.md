@@ -9,7 +9,7 @@
   <p align="center">
     Projecto creado por: </br> <strong> Jose Luis Chavez Guerra </strong>
     <br />
-    <a href="https://to-do-guerracode.herokuapp.com/"><strong>Ver Documentación »</strong></a>
+    <a href="https://payment-orders.herokuapp.com/docs/"><strong>Ver Documentación »</strong></a>
     <br />
     <br />
     ·
@@ -34,7 +34,6 @@ Estas son las principales tecnologias usadas en el proyecto:
 - Express
 - MySQL
 - AWS RDS
-- AWS EC3
 - Passport
 - JWT
 
@@ -42,17 +41,17 @@ Estas son las principales tecnologias usadas en el proyecto:
 
 ## Probar el proyecto
 
-Se le hizo deploy al proyecto a AWS por lo tanto se puede probar desde donde sea con una herramienta como **Postman**. </br>
+Se le hizo deploy al proyecto por lo tanto se puede probar desde donde sea con una herramienta como **Postman**. </br>
 Se puede descargar el poyecto y probar directamente (si se quiere hacer eso mandar correo a josephsiul15@gmail.com) para poder obtener las credenciales de connección con la Base de Datos.
 
 ### Iniciar
 - Instalar [Postman](https://www.postman.com/)
 
 - Iniciar Sesión
-- Ir a **Import > Link** y pegar este link: https://www.getpostman.com/collections/ff42a1bda87314a0ef44     el cual 
-- Ahi aparecera una Colleccion en la parte izquierda la cual contiene todos los enpoints preconfigurados para hacer los requests.
+- Ir a **Import > Link** y pegar este link: https://www.getpostman.com/collections/ff42a1bda87314a0ef44 
+- Aparecera una Colleccion en la parte izquierda la cual contiene todos los enpoints preconfigurados para hacer los requests.
 - Ya solo elegir un enpoint a probar y darle en el boton de Enviar.
-- Para mas informacion sobre que se envia y reciben los enpints ir a la [Documentacion](https://www.postman.com/).
+- Para mas informacion sobre que se envia y reciben los enpints ir a la [Documentacion](https://payment-orders.herokuapp.com/docs/).
 
 <!-- CONTRIBUTING -->
 </br>
@@ -80,4 +79,3 @@ Project Link: [GitHub](https://github.com/guerracode/payment-orders)
 [license-url]: https://github.com/guerracode/To-Do/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/jose-luis-chavez/
-[product-screenshot]: ./static/images/example.png
