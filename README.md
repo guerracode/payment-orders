@@ -37,6 +37,9 @@ Estas son las principales tecnologias usadas en el proyecto:
 - Passport
 - JWT
 
+## Diagrama de la Base de Datos
+![](./public/BaseDeDatos.png)
+
 <!-- GETTING STARTED -->
 
 ## Probar el proyecto
