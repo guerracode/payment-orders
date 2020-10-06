@@ -7,16 +7,18 @@ const UserService = require('../../services/users');
 
 passport.use(
   new BasicStrategy(async (email, password, cb) => {
-    // user logic
-    const userService = new UserService();
-
+    
     try {
+      // user logic
+      const userService = new UserService();
+
+      console.log('TESTSS');
       // find if user is on the DB and return it
       const user = await userService.getUser(email);
 
-      // if no user return error unauthorized
+      // if no user, return error unauthorized
       if (!user) {
-        return cb(boom.unauthorized(), false);
+        return cb('No user', false);
       }
 
       // Check if password passed matches the password stored in the DB.

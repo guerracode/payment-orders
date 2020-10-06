@@ -1,44 +1,70 @@
 const mysql = require('mysql2/promise');
 const boom = require('@hapi/boom');
+const SqlString = require('sqlstring');
 const config = require('../../config/index');
-
-const dbConfig = config.mysql;
 
 class DatabaseMySQL {
   constructor() {
-    this.connection = undefined;
-    this.handleConnection();
+    this.dbConfig = config.mysql;
   }
 
-  async handleConnection() {
+  async get(table, data, search = 'id') {
     try {
-      this.connection = await mysql.createConnection(dbConfig);
-      console.log('Connected!');
+      const con = await mysql.createConnection(this.dbConfig);
+      const sql = SqlString.format(`SELECT * FROM ${table} WHERE ${search}=?`, [data]);
+
+      const [rows] = await con.execute(sql);
+      return rows[0];
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  async getUser(data) {
+  async getAll(table) {
     try {
-      const [rows] = await this.connection.execute(`SELECT * FROM users WHERE username='${data}'`);
-      console.log('RESULT GET', rows[0].username);
-      return rows[0].username;
+      const con = await mysql.createConnection(this.dbConfig);
+      const sql = SqlString.format(`SELECT * FROM ${table}`);
+
+      const [rows] = await con.execute(sql);
+      return rows;
     } catch (error) {
-      return undefined;
+      throw new Error(error);
     }
   }
 
-  async createUser(data) {
-    const { username, password } = data;
+  async create(table, data) {
+    const con = await mysql.createConnection(this.dbConfig);
+    const sql = SqlString.format(`INSERT INTO ${table} SET ?`, [data]);
+
     try {
-      const result = await this.connection.execute(
-        `INSERT INTO users (username, password) VALUES ('${username}', '${password}')`
-      );
-      console.log('ResultQUery', result);
-      return result;
+      await con.execute(sql);
+      return true;
     } catch (error) {
-      throw new Error(boom.unauthorized('User already Exist'));
+      throw new Error(boom.unauthorized(error));
+    }
+  }
+
+  async update(table, data) {
+    const con = await mysql.createConnection(this.dbConfig);
+    const sql = SqlString.format(`UPDATE ${table} SET ? WHERE id=?`, [data, data.id]);
+
+    try {
+      await con.execute(sql);
+      return true;
+    } catch (error) {
+      throw new Error(boom.unauthorized(error));
+    }
+  }
+
+  async delete(table, data) {
+    const con = await mysql.createConnection(this.dbConfig);
+    const sql = SqlString.format(`DELETE FROM ${table} WHERE id=?`, [data]);
+
+    try {
+      await con.execute(sql);
+      return true;
+    } catch (error) {
+      throw new Error(boom.unauthorized(error));
     }
   }
 }

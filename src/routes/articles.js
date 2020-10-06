@@ -1,44 +1,94 @@
 const express = require('express');
 const passport = require('passport');
-// const OrdersService = require('../services/orders');
-// const validationHandler = require('../util/middleware/validationHandler');
-// const { createEventSchema } = require('../utils/schemas/event');
+const boom = require('@hapi/boom');
+const ArticlesService = require('../services/articles');
+const validationHandler = require('../util/middleware/validationHandler');
+const { createArticlesSchema } = require('../util/schemas/articles');
 
 // JWT Strategy
-// require('../utils/auth/strategies/jwt');
+require('../util/auth/jwt');
 
-const router = express.Router();
+function articlesApi(app) {
+  const router = express.Router();
+  app.use('/api/articles', router);
 
-// const eventService = new OrdersService();
+  const articlesService = new ArticlesService();
 
-router.get('/', (req, res) => {
-  res.send('OK Articles');
-});
-
-router.post(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  // validationHandler(createEventSchema),
-  async (req, res, next) => {
-    const { body: event } = req;
-
-    // Add the current user_id to the event
-    if (!event.user_id) {
-      event.user_id = req.user.id;
-    }
+  router.get('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const articleId = req.query.id;
 
     try {
-      // Store event in the DB and return it
-      //   const createdEvent = await eventService.createEvent(event);
+      let article;
+      if (articleId) {
+        article = await articlesService.getArticle(articleId);
+      } else {
+        article = await articlesService.getAllArticles();
+      }
+      // Get article by ID
       // Response
-      res.status(201).json({
-        // data: createdEvent,
-        message: 'event created',
+      res.status(200).json({
+        data: article,
+        message: `article obtained`,
       });
     } catch (error) {
-      next(error);
+      next(boom.unauthorized(error));
     }
-  }
-);
+  });
 
-module.exports = router;
+  router.post(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    validationHandler(createArticlesSchema),
+    async (req, res, next) => {
+      const { body: article } = req;
+
+      try {
+        // Store article in the DB and return it
+        const createdArticle = await articlesService.createArticle(article);
+        // Response
+        res.status(201).json({
+          data: createdArticle,
+          message: `article ${createdArticle.name} created`,
+        });
+      } catch (error) {
+        next(boom.unauthorized(error));
+      }
+    }
+  );
+
+  router.put(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    validationHandler(createArticlesSchema),
+    async (req, res, next) => {
+      const { body: article } = req;
+      try {
+        // Update article in the DB and return it
+        const createdArticle = await articlesService.updateArticle(article);
+        // Response
+        res.status(200).json({
+          message: `article ${createdArticle.name} updated`,
+        });
+      } catch (error) {
+        next(boom.unauthorized(error));
+      }
+    }
+  );
+
+  router.delete('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const articleId = req.query.id;
+
+    try {
+      // Delete article by ID
+      const article = await articlesService.deleteArticle(articleId);
+      // Response
+      res.status(200).json({
+        message: `article with id ${article} deleted successfully`,
+      });
+    } catch (error) {
+      next(boom.unauthorized(error));
+    }
+  });
+}
+
+module.exports = articlesApi;

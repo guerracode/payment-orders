@@ -1,7 +1,5 @@
 const joi = require('joi');
 
-const userIdSchema = joi.number();
-
 // Schema to validate the data received from the user
 const createUserSchema = joi.object({
   username: joi.string().alphanum().min(3).max(30).required(),
@@ -9,6 +7,5 @@ const createUserSchema = joi.object({
 });
 
 module.exports = {
-  userIdSchema,
   createUserSchema,
 };

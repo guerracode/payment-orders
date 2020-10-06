@@ -4,11 +4,12 @@ const DataBase = require('../lib/db/mysql');
 class UserService {
   constructor() {
     this.dataBase = new DataBase();
+    this.table = 'users';
   }
 
   async getUser(username) {
     try {
-      const user = await this.dataBase.getUser(username);
+      const user = await this.dataBase.get(this.table, username, 'username');
       return user;
     } catch (error) {
       throw new Error(error);
@@ -22,10 +23,11 @@ class UserService {
       // hash the password to be secure
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      await this.dataBase.createUser(this.table, {
+      await this.dataBase.create(this.table, {
         username,
         password: hashedPassword,
       });
+
       return username;
     } catch (error) {
       throw new Error(error);

@@ -1,47 +1,103 @@
 const express = require('express');
 const passport = require('passport');
-// const OrdersService = require('../services/orders');
-// const validationHandler = require('../util/middleware/validationHandler');
-// const { createEventSchema } = require('../utils/schemas/event');
-const Database = require('../lib/db/mysql');
+const boom = require('@hapi/boom');
+
+const OrdersService = require('../services/orders');
+const validationHandler = require('../util/middleware/validationHandler');
+const { createOrdersSchema } = require('../util/schemas/orders');
 
 // JWT Strategy
-// require('../utils/auth/strategies/jwt');
+require('../util/auth/jwt');
 
-const router = express.Router();
+function ordersApi(app) {
+  const router = express.Router();
+  app.use('/api/orders', router);
 
-// const eventService = new OrdersService();
-// const database = new Database();
+  const ordersService = new OrdersService();
 
-router.get('/', (req, res) => {
-  // database.getUser('luis');
-  res.send('OK Orders');
-});
-
-router.post(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  // validationHandler(createEventSchema),
-  async (req, res, next) => {
-    const { body: event } = req;
-
-    // Add the current user_id to the event
-    if (!event.user_id) {
-      event.user_id = req.user.id;
-    }
+  router.get('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const orderId = req.query.id;
 
     try {
-      // Store event in the DB and return it
-      //   const createdEvent = await eventService.createEvent(event);
+      let order;
+      if (orderId) {
+        order = await ordersService.getOrder(orderId);
+      } else {
+        order = await ordersService.getAllOrders();
+      }
+      // Get order by ID
       // Response
-      res.status(201).json({
-        // data: createdEvent,
-        message: 'event created',
+      res.status(200).json({
+        data: order,
+        message: `order obtained`,
       });
     } catch (error) {
-      next(error);
+      next(boom.unauthorized(error));
     }
-  }
-);
+  });
 
-module.exports = router;
+  router.post(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    validationHandler(createOrdersSchema),
+    async (req, res, next) => {
+      const { body: order } = req;
+
+      // Add the current date and user_id to the order
+      if (!order.date) {
+        order.date = new Date();
+      }
+      if (!order.user_id) {
+        order.id_user = req.user.id;
+      }
+
+      try {
+        // Store event in the DB and return it
+        const createdOrder = await ordersService.createOrder(order);
+        // Response
+        res.status(201).json({
+          data: createdOrder,
+          message: 'order created',
+        });
+      } catch (error) {
+        next(boom.unauthorized(error));
+      }
+    }
+  );
+
+  router.put(
+    '/',
+    passport.authenticate('jwt', { session: false }),
+    validationHandler(createOrdersSchema),
+    async (req, res, next) => {
+      const { body: order } = req;
+      try {
+        // Update order in the DB and return it
+        const createdOrder = await ordersService.updateOrder(order);
+        // Response
+        res.status(200).json({
+          message: `order ${createdOrder.name} updated`,
+        });
+      } catch (error) {
+        next(boom.unauthorized(error));
+      }
+    }
+  );
+
+  router.delete('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const orderId = req.query.id;
+
+    try {
+      // Delete order by ID
+      const order = await ordersService.deleteOrder(orderId);
+      // Response
+      res.status(200).json({
+        message: `order with id ${order} deleted successfully`,
+      });
+    } catch (error) {
+      next(boom.unauthorized(error));
+    }
+  });
+}
+
+module.exports = ordersApi;
