@@ -38,7 +38,7 @@ Estas son las principales tecnologias usadas en el proyecto:
 - JWT
 
 ## Diagrama de la Base de Datos
-![](./public/BaseDeDatos.png)
+<img src="./public/BaseDeDatos.PNG" alt="Logo">
 
 <!-- GETTING STARTED -->
 
