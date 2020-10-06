@@ -26,8 +26,9 @@ class OrdersService {
 
   async createOrder(order) {
     try {
-      await this.dataBase.create(this.table, order);
-      return order;
+      let result = await this.dataBase.create(this.table, order);
+      result = { id: result, ...order };
+      return result;
     } catch (error) {
       throw new Error(error);
     }
@@ -46,6 +47,15 @@ class OrdersService {
     try {
       await this.dataBase.delete(this.table, order);
       return order;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async getDates(param, value) {
+    try {
+      const dates = await this.dataBase.getDates(param, value);
+      return dates;
     } catch (error) {
       throw new Error(error);
     }

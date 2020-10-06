@@ -64,10 +64,10 @@ function articlesApi(app) {
       const { body: article } = req;
       try {
         // Update article in the DB and return it
-        const createdArticle = await articlesService.updateArticle(article);
+        await articlesService.updateArticle(article);
         // Response
         res.status(200).json({
-          message: `article ${createdArticle.name} updated`,
+          message: `article updated`,
         });
       } catch (error) {
         next(boom.unauthorized(error));
@@ -89,6 +89,27 @@ function articlesApi(app) {
       next(boom.unauthorized(error));
     }
   });
+
+  router.get(
+    '/frequent/:number',
+    passport.authenticate('jwt', { session: false }),
+    async (req, res, next) => {
+      const { number } = req.params;
+
+      try {
+        const frequent = await articlesService.getFrequent(number);
+
+        // Get article by ID
+        // Response
+        res.status(200).json({
+          data: frequent,
+          message: `frequent article obtained`,
+        });
+      } catch (error) {
+        next(boom.unauthorized(error));
+      }
+    }
+  );
 }
 
 module.exports = articlesApi;

@@ -73,10 +73,10 @@ function ordersApi(app) {
       const { body: order } = req;
       try {
         // Update order in the DB and return it
-        const createdOrder = await ordersService.updateOrder(order);
+        await ordersService.updateOrder(order);
         // Response
         res.status(200).json({
-          message: `order ${createdOrder.name} updated`,
+          message: `order updated`,
         });
       } catch (error) {
         next(boom.unauthorized(error));
@@ -93,6 +93,34 @@ function ordersApi(app) {
       // Response
       res.status(200).json({
         message: `order with id ${order} deleted successfully`,
+      });
+    } catch (error) {
+      next(boom.unauthorized(error));
+    }
+  });
+
+  router.get('/date', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    let param;
+    let value;
+    if (req.query.after) {
+      param = req.query.after;
+      value = 'after';
+    } else if (req.query.before) {
+      param = req.query.before;
+      value = 'before';
+    } else if (req.query.start && req.query.end) {
+      param = { start: req.query.start, end: req.query.end };
+      value = 'between';
+    }
+
+    try {
+      const dates = await ordersService.getDates(param, value);
+
+      // Get order by ID
+      // Response
+      res.status(200).json({
+        data: dates,
+        message: `order obtained`,
       });
     } catch (error) {
       next(boom.unauthorized(error));

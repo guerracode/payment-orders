@@ -26,8 +26,9 @@ class ArticlesService {
 
   async createArticle(article) {
     try {
-      await this.dataBase.create(this.table, article);
-      return article;
+      let result = await this.dataBase.create(this.table, article);
+      result = { id: result, ...article };
+      return result;
     } catch (error) {
       throw new Error(error);
     }
@@ -46,6 +47,15 @@ class ArticlesService {
     try {
       await this.dataBase.delete(this.table, article);
       return article;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async getFrequent(number) {
+    try {
+      const result = await this.dataBase.frequent(number);
+      return result;
     } catch (error) {
       throw new Error(error);
     }

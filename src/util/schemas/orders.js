@@ -6,6 +6,12 @@ const createOrdersSchema = joi.object({
   name: joi.string().min(3).max(60),
   description: joi.string(),
   date: joi.date(),
+  articles: joi.array().items(
+    joi.object({
+      id: joi.number().required(),
+      number: joi.number().required(),
+    })
+  ),
 });
 
 module.exports = {
